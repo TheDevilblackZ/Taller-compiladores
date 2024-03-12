@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de tareas</title>
+
+  <!-- css -->
+  <link rel="stylesheet" href="index.css">
+
+  <!-- jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body>
+    <header>
+      <h1>Gestor de Tareas</h1>
+    </header>
+
+    <div class="tool-bar">
+      <button id="crearTareabtn">Crear Tarea</button>
+    </div>
+
+    <div class="crear-tarea-div">
+      
+      <form action="" id="formCrearTarea">
+ 
+        <h2 style="margin:0; margin-top: 20px;">Crear Tarea</h2>
+     
+        <div class="row">
+          <input type="text" placeholder="TITULO" id="Titulo">
+        </div>
+
+        <div class="row">
+          <textarea name="Descripcion" id="Descripcion" cols="30" rows="10" maxlength="100" placeholder="DESCRIPCION" ></textarea>
+        </div>
+
+        <div class="row">
+          <select name="Tipo" id="Tipo">
+            <option value="" disabled selected>TIPO DE TAREA</option>
+            <option value="Investigacion">Investigacion</option>
+            <option value="Tarea">Tarea</option>
+            <option value="Parcial">Parcial</option>
+            <option value="Laboratorio">Laboratorio</option>
+            <option value="Presentacion">Presentacion</option>
+          </select>
+        </div>
+        
+        <div class="row">
+          <label for="Fecha_expiracion">Fecha de expiracion</label>
+          <input type="date" name="Fecha_expiracion" id="Fecha_expiracion">
+
+          <label for="Fecha_creacion">Fecha de creacion</label>
+          <input type="date" name="Fecha_creacion" id="Fecha_creacion">
+        </div>
+        
+        <div class="row">
+          <select name="Estado" id="Estado">
+            <option value="" disabled selected>ESTADO</option>
+            <option value="abierta">Abierta</option>
+            <option value="caducada">Caducada</option>
+          </select>
+  
+  
+          <select name="Prioridad" id="Prioridad">
+            <option value="" disabled selected>PRIORIDAD</option>
+            <option value="Alta Prioridad">Alta prioridad</option>
+            <option value="Media prioridad">Media prioridad</option>
+            <option value="Baja prioridad">Baja prioridad</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <button type="button">
+            Cancelar
+          </button>
+          <button type="submit">
+            Enviar
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+
+
+
+    <div class="table-container">
+      <table class="tabla-tareas">
+        <tr>
+          <th>ID</th>
+          <th>Titulo</th>
+          <th>Descripcion</th>
+          <th>Tipo</th>
+          <th>Fecha Expiracion</th>
+          <th>Fecha Creacion</th>
+          <th>Estado</th>
+          <th>Prioridad</th>
+          <!-- <th>Accion</th> -->
+          
+        </tr>
+  
+       
+        
+        
+      </table>
+    </div>
+  
+
+
+    <div class="actualizarModal">
+      <div class="div-modal">
+        <div class="header-modal">
+          <p>Editar Tarea</p>
+        </div>
+
+        <div class="modal-content">
+          <form action="" id="formActualizarTarea">
+            <div class="row-1">
+              <input type="text" placeholder="TITULO" id="TituloActualizar">
+            
+    
+              <textarea name="Descripcion" id="DescripcionActualizar" cols="30" rows="10" maxlength="100" placeholder="DESCRIPCION" ></textarea>
+        
+    
+         
+              <select name="Tipo" id="TipoActualizar">
+                <option value="" disabled selected>TIPO DE TAREA</option>
+                <option value="Investigacion">Investigacion</option>
+                <option value="Tarea">Tarea</option>
+                <option value="Parcial">Parcial</option>
+                <option value="Laboratorio">Laboratorio</option>
+                <option value="Presentacion">Presentacion</option>
+              </select>
+            </div>
+            
+            <div class="row-1">
+              <label for="Fecha_expiracion">Fecha de expiracion</label>
+              <input type="date" name="Fecha_expiracion" id="Fecha_expiracionActualizar">
+    
+              <label for="Fecha_creacion">Fecha de creacion</label>
+              <input type="date" name="Fecha_creacion" id="Fecha_creacionActualizar">
+          
+            
+              <label for="Estado">Estado</label>
+              <select name="Estado" id="EstadoActualizar">
+                <option value="" disabled selected>ESTADO</option>
+                <option value="abierta">Abierta</option>
+                <option value="caducada">Caducada</option>
+              </select>
+      
+              <label for="Prioridad">Prioridad</label>
+              <select name="Prioridad" id="PrioridadActualizar">
+                <option value="" disabled selected>PRIORIDAD</option>
+                <option value="Alta Prioridad">Alta prioridad</option>
+                <option value="Media prioridad">Media prioridad</option>
+                <option value="Baja prioridad">Baja prioridad</option>
+              </select>
+            </div>
+    
+          
+              <button type="button" id="cerrarModalActualizar">
+                Cancelar
+              </button>
+              <button type="submit">
+                Actualizar Datos
+              </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+    <script>
+      // Espera a que el documento esté listo
+      $(document).ready(function() {
+        // modalActualizar
+        const modalActualizar = $('.actualizarModal');
+        modalActualizar.hide();
+
+        // para crear tareas
+        const botonCrearTarea = $('#crearTareabtn');
+        const contenedorCrearTarea = $('.crear-tarea-div');
+        
+        // escodner contendor al inicio
+        contenedorCrearTarea.hide();
+
+        // mostrar formulario de creacion de tarea
+        botonCrearTarea.on('click',function(){
+           // Si el contenedor está visible, ocúltalo; de lo contrario, muéstralo
+            if (contenedorCrearTarea.is(':visible')) {
+                contenedorCrearTarea.slideUp();
+            } else {
+                contenedorCrearTarea.slideDown();
+            }
+        })
+
+        crearTarea();
+
+        function crearTarea(){
+          const formTarea = $('#formCrearTarea');
+
+          formTarea.on('submit',function(event){
+            event.preventDefault();
+
+            var titulo = $('#Titulo').val();
+            var descripcion = $('#Descripcion').val();
+            var tipoTarea = $('#Tipo').val();
+            var fechaExpiracion = $('#Fecha_expiracion').val();
+            var fechaCreacion = $('#Fecha_creacion').val();
+            var estado = $('#Estado').val();
+            var prioridad = $('#Prioridad').val();
+
+            // Crea un objeto con los datos de la tarea
+            var tarea = {
+                Titulo: titulo,
+                Descripcion: descripcion,
+                Tipo: tipoTarea,
+                Fecha_expiracion: fechaExpiracion,
+                Fecha_creacion: fechaCreacion,
+                Estado: estado,
+                Prioridad: prioridad
+            };
+            // console.log(tarea)
+
+            $.ajax({
+              type: 'POST',
+              url: '/crear/tarea',
+              contentType: 'application/json', // Especifica el tipo de contenido como JSON
+              data: JSON.stringify(tarea), // Convierte el objeto JavaScript a JSON
+              success: function(response) {
+                  // Maneja la respuesta del servidor si es necesario
+                  console.log('Tarea enviada con éxito:', response);
+                  contenedorCrearTarea.slideUp();
+                  traerTareas();
+                  setTimeout(function(){
+                    alert('Tarea creada con Éxito!')
+                  },1000)
+             
+              },
+              error: function(xhr, status, error) {
+       
+                  // Maneja los errores de la solicitud AJAX
+                  console.error('Error al enviar la tarea:', error);
+              }
+            })
+
+          })
+        }
+          
+        
+        // trae las tareas
+        traerTareas();
+        function traerTareas(){
+          $.ajax({
+                type:'GET',
+                url:'/tareas',
+                dataType: 'json',
+                success:function(response){
+                  console.log(response.tareas);
+
+                  if($('.row-data')){
+                    $('.row-data').remove();
+                  }
+                  
+                
+                  response.tareas.forEach(function(tarea){
+                    const newRow = $('<tr>');
+                    newRow.addClass('row-data');
+
+                    const fechaExpiracion = tarea.Fecha_expiracion.split('T')[0];
+                    const fechaCreacion = tarea.Fecha_creacion.split('T')[0];
+
+                    newRow.data('id',tarea.id);
+                    
+                    newRow.append($('<td>').text(tarea.id));
+                    newRow.append($('<td>').text(tarea.Titulo));
+                    newRow.append($('<td>').text(tarea.Descripcion));
+                    newRow.append($('<td>').text(tarea.Tipo));
+
+                    newRow.append($('<td>').text(fechaExpiracion));
+                    newRow.append($('<td>').text(fechaCreacion));
+                    
+                    const cambiarEstadodiv = $('<td>');
+                    const cambiarEstado = $('<button>').text(tarea.Estado);
+                  
+                    cambiarEstadodiv.append(cambiarEstado);
+                    console.log(tarea.Estado);
+
+                    if(tarea.Estado === 'abierta'){
+                      cambiarEstado.css('background','green');
+                    }else{
+                      cambiarEstado.css('background','red');
+                    }
+                    
+
+                    cambiarEstado.on('click',function(){
+
+                      // hacer peticion ajax
+                      const nuevoEstado = tarea.Estado === 'abierta' ? 'caducada' : 'abierta';
+
+                      if(confirm('Cambiar Estado de la Tarea?')){
+                        $.ajax({
+                        url:'/actualizar/estado/'+ tarea.id,
+                        type:'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ estado: nuevoEstado }),
+                        success: function(response){
+                          
+                           traerTareas();
+                           
+                        },error: function(xhr, status, error) {
+                            console.error('Error al actualizar el estado de la tarea:', error);
+                          }
+                        })
+                      }else{
+                        return
+                      }
+                    })
+                    
+                    newRow.append(cambiarEstadodiv);
+                    // newRow.append($('<td>').text(tarea.Estado));
+                    newRow.append($('<td>').text(tarea.Prioridad));
+
+                    const btnContainer = $('<td>');
+                    // btnContainer.addClass('btn-container')
+                    const btnActualizar = $('<button>').text('Actualizar');
+                    const btnEliminar = $('<button>').text('Eliminar');
+                    btnContainer.append(btnActualizar,btnEliminar);
+                    newRow.append(btnContainer);
+                    // Agrega la fila a la tabla
+                    $('.tabla-tareas').append(newRow);
+
+
+                    btnActualizar.on('click',function(){
+                      // borrar valores
+                      $('#TituloActualizar').val('');
+                      $('#DescripcionActualizar').val('');
+                      $('#TipoActualizar').val('');
+                      $('#Fecha_expiracionActualizar').val('');
+                      $('#Fecha_creacionActualizar').val('');
+                      $('#EstadoActualizar').val('');
+                      $('#PrioridadActualizar').val('');
+
+                      // desplegar modal 
+                      modalActualizar.show(); 
+
+                      //asignar valor a titulo
+                      $('#TituloActualizar').val(tarea.Titulo);
+                      $('#DescripcionActualizar').val(tarea.Descripcion);
+                      $('#TipoActualizar').val(tarea.Tipo);
+                      $('#Fecha_expiracionActualizar').val(fechaExpiracion);
+                      $('#Fecha_creacionActualizar').val(fechaCreacion);
+                      $('#EstadoActualizar').val(tarea.Estado);
+                      $('#PrioridadActualizar').val(tarea.Prioridad);
+
+
+                      // logica de actualizar un registro
+                      const btnCerrarModal = $('#cerrarModalActualizar');
+                      
+                      btnCerrarModal.off('click').on('click',function(){
+                        modalActualizar.hide();
+                      })
+
+
+        
+                      const formularioActualizar = $('#formActualizarTarea');
+
+                      formularioActualizar.off('submit').on('submit',function(event){
+                        event.preventDefault();
+                        
+                        // traer valores
+                        const tituloActualizar = $('#TituloActualizar').val();
+                        const descripcionActualizar = $('#DescripcionActualizar').val();
+                        const TipoActualizar = $('#TipoActualizar').val();
+                        const fecha_expiracionActualizar = $('#Fecha_expiracionActualizar').val();
+                        const Fecha_creacionActualizar=$('#Fecha_creacionActualizar').val();
+                        const estadoActualizar = $('#EstadoActualizar').val();
+                        const PrioridadActualizar = $('#PrioridadActualizar').val();
+
+
+                        var tareaActualizar = {
+                          Titulo: tituloActualizar,
+                          Descripcion: descripcionActualizar,
+                          Tipo: TipoActualizar,
+                          Fecha_expiracion: fecha_expiracionActualizar,
+                          Fecha_creacion: Fecha_creacionActualizar,
+                          Estado : estadoActualizar,
+                          Prioridad: PrioridadActualizar
+                        }
+                    
+                        $.ajax({
+                          type: 'PUT',
+                          url: '/actualizar/tarea/'+tarea.id,
+                          contentType: 'application/json', // Especifica el tipo de contenido como JSON
+                          data: JSON.stringify(tareaActualizar), // Convierte el objeto JavaScript a JSON
+                          success: function(response) {
+                            traerTareas();
+                            modalActualizar.hide();
+                            
+                          },
+                            error: function(xhr, status, error) {
+                                console.error('Error al actualizar la tarea:', error);
+                            }
+                        })
+
+
+
+
+                      })
+
+                    })  
+                    
+
+                    btnEliminar.on('click',function(){
+                      if(confirm('Seguro que desea eliminar la Tarea?')){
+                        $.ajax({
+                          type : 'DELETE',
+                          url : '/eliminar/tarea/'+tarea.id,
+                          success: function(response){
+                            
+                            traerTareas();
+                          },error: function(xhr, status, error) {
+                              console.error('Error al eliminar la tarea:', error);
+                            }
+                        });
+                      }else{
+                        return
+                      }
+
+                     
+
+                    })
+                  
+                  })
+
+
+              }
+            })
+        }
+            
+      });
+    </script>
+
+  
+
+</body>
+</html>
